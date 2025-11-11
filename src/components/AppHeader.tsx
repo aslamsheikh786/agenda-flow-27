@@ -2,8 +2,14 @@ import { Search, Settings, Sun, Moon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import { CalendarViewSwitcher, CalendarView } from "./CalendarViewSwitcher";
 
-export const AppHeader = () => {
+interface AppHeaderProps {
+  currentView: CalendarView;
+  onViewChange: (view: CalendarView) => void;
+}
+
+export const AppHeader = ({ currentView, onViewChange }: AppHeaderProps) => {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -24,7 +30,8 @@ export const AppHeader = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
+        <CalendarViewSwitcher currentView={currentView} onViewChange={onViewChange} />
         <Button
           variant="ghost"
           size="icon"

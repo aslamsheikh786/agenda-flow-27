@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
 
 interface CalendarEvent {
   id: string;
@@ -12,6 +13,50 @@ interface CalendarEvent {
 interface CalendarGridProps {
   events?: CalendarEvent[];
 }
+
+interface DayCardProps {
+  day: number;
+  today: boolean;
+  dayEvents: CalendarEvent[];
+  date: Date;
+}
+
+const DayCard = ({ day, today, dayEvents, date }: DayCardProps) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: date.toDateString(),
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`bg-card p-3 min-h-[120px] hover:bg-calendar-hover transition-all cursor-pointer group ${
+        today ? "ring-2 ring-primary ring-inset" : ""
+      } ${isOver ? "bg-primary/10 ring-2 ring-primary" : ""}`}
+    >
+      <div className="flex justify-between items-start mb-2">
+        <span
+          className={`text-sm font-semibold transition-all ${
+            today
+              ? "bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center shadow-soft"
+              : "text-foreground group-hover:text-primary"
+          }`}
+        >
+          {day}
+        </span>
+      </div>
+      <div className="space-y-1">
+        {dayEvents.map((event) => (
+          <div
+            key={event.id}
+            className="text-xs p-1.5 rounded-md bg-calendar-event text-primary-foreground truncate hover:opacity-90 transition-all shadow-soft"
+          >
+            {event.title}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -109,36 +154,16 @@ export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
             const day = index + 1;
             const dayEvents = getEventsForDay(day);
             const today = isToday(day);
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
 
             return (
-              <div
+              <DayCard
                 key={day}
-                className={`bg-card p-3 min-h-[120px] hover:bg-calendar-hover transition-all cursor-pointer group ${
-                  today ? "ring-2 ring-primary ring-inset" : ""
-                }`}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <span
-                    className={`text-sm font-semibold transition-all ${
-                      today
-                        ? "bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center shadow-soft"
-                        : "text-foreground group-hover:text-primary"
-                    }`}
-                  >
-                    {day}
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  {dayEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="text-xs p-1.5 rounded-md bg-calendar-event text-primary-foreground truncate hover:opacity-90 transition-all shadow-soft"
-                    >
-                      {event.title}
-                    </div>
-                  ))}
-                </div>
-              </div>
+                day={day}
+                today={today}
+                dayEvents={dayEvents}
+                date={date}
+              />
             );
           })}
         </div>
