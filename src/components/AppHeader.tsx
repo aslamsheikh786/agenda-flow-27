@@ -1,29 +1,43 @@
-import { Calendar, Search, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, Settings, Sun, Moon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 export const AppHeader = () => {
-  return (
-    <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-semibold text-foreground">CalendarSync</h1>
-        </div>
-      </div>
+  const { theme, setTheme } = useTheme();
 
+  return (
+    <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 shadow-soft backdrop-blur-sm">
+      <div className="flex items-center gap-4">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          Morgen
+        </h1>
+      </div>
+      
       <div className="flex-1 max-w-md mx-8">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search events and tasks..."
-            className="pl-10 bg-muted/50 border-0"
+            className="pl-10 bg-background border-input shadow-soft"
           />
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="hover:bg-muted">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="hover:bg-muted/50"
+        >
+          {theme === "dark" ? (
+            <Sun className="h-5 w-5 text-foreground" />
+          ) : (
+            <Moon className="h-5 w-5 text-foreground" />
+          )}
+        </Button>
+        <Button variant="ghost" size="icon" className="hover:bg-muted/50">
           <Settings className="h-5 w-5" />
         </Button>
       </div>
