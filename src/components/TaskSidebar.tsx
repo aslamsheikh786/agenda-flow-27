@@ -1,4 +1,4 @@
-import { Plus, Circle, CheckCircle2, Calendar, Trash2, Zap, FolderPlus, ChevronRight, ChevronDown, Folder } from "lucide-react";
+import { Plus, Circle, CheckCircle2, Calendar, Trash2, Zap, FolderPlus, ChevronRight, ChevronDown, Folder, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -59,10 +59,15 @@ const DraggableTask = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-start gap-3 p-3 rounded-xl hover:bg-sidebar-accent transition-all border border-transparent hover:border-border shadow-soft hover:shadow-medium cursor-move"
-      {...listeners}
-      {...attributes}
+      className="group flex items-start gap-2 p-3 rounded-xl hover:bg-sidebar-accent transition-all border border-transparent hover:border-border shadow-soft hover:shadow-medium"
     >
+      <div
+        className="mt-0.5 flex-shrink-0 cursor-move hover:text-primary transition-colors"
+        {...listeners}
+        {...attributes}
+      >
+        <GripVertical className="h-5 w-5 text-muted-foreground" />
+      </div>
       <button
         onClick={(e) => {
           e.stopPropagation();
