@@ -147,10 +147,11 @@ const DraggableTask = ({
 };
 
 interface TaskSidebarProps {
-  onAddEvent?: (title: string) => void;
+  onAddEvent?: (title: string, taskId?: string) => void;
+  onDeleteTask?: (taskId: string) => void;
 }
 
-export const TaskSidebar = ({ onAddEvent }: TaskSidebarProps) => {
+export const TaskSidebar = ({ onAddEvent, onDeleteTask }: TaskSidebarProps) => {
   const [tasks, setTasks] = useState<Task[]>([
     { 
       id: "1", 
@@ -286,11 +287,14 @@ export const TaskSidebar = ({ onAddEvent }: TaskSidebarProps) => {
 
   const deleteTask = (id: string) => {
     setTasks(tasks.filter((task) => task.id !== id));
+    if (onDeleteTask) {
+      onDeleteTask(id);
+    }
   };
 
   const addToCalendar = (task: Task) => {
     if (onAddEvent) {
-      onAddEvent(task.title);
+      onAddEvent(task.title, task.id);
     }
   };
 

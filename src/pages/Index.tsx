@@ -14,6 +14,7 @@ interface CalendarEvent {
   date: Date;
   startTime?: string;
   endTime?: string;
+  taskId?: string;
 }
 
 const Index = () => {
@@ -23,16 +24,21 @@ const Index = () => {
   ]);
   const [currentView, setCurrentView] = useState<CalendarView>("month");
 
-  const handleAddEvent = (title: string) => {
+  const handleAddEvent = (title: string, taskId?: string) => {
     const newEvent = {
       id: Date.now().toString(),
       title,
       date: new Date(),
       startTime: "09:00",
       endTime: "10:00",
+      taskId,
     };
     setEvents([...events, newEvent]);
     toast.success("Task added to calendar");
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    setEvents(events.filter((event) => event.taskId !== taskId));
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -61,6 +67,7 @@ const Index = () => {
         date: dropDate,
         startTime: dropDate.getHours().toString().padStart(2, "0") + ":00",
         endTime: (dropDate.getHours() + 1).toString().padStart(2, "0") + ":00",
+        taskId: taskData.id,
       };
 
       setEvents([...events, newEvent]);
@@ -85,7 +92,7 @@ const Index = () => {
       <div className="flex flex-col h-screen bg-background">
         <AppHeader currentView={currentView} onViewChange={setCurrentView} />
         <div className="flex flex-1 overflow-hidden">
-          <TaskSidebar onAddEvent={handleAddEvent} />
+          <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} />
           <div className="flex-1 overflow-auto">
             {renderCalendarView()}
           </div>

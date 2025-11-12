@@ -67,7 +67,7 @@ All colors MUST be HSL.
     --popover: 220 15% 11%;
     --popover-foreground: 220 10% 92%;
 
-    --primary: 268 75% 65%;
+    --primary: 250 70% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 15%;
@@ -76,7 +76,7 @@ All colors MUST be HSL.
     --muted: 220 15% 15%;
     --muted-foreground: 220 10% 55%;
 
-    --accent: 268 75% 65%;
+    --accent: 250 70% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -84,21 +84,21 @@ All colors MUST be HSL.
 
     --border: 220 15% 18%;
     --input: 220 15% 15%;
-    --ring: 268 75% 65%;
+    --ring: 250 70% 60%;
     
     --calendar-today: 350 80% 65%;
-    --calendar-event: 268 75% 65%;
+    --calendar-event: 250 70% 60%;
     --calendar-hover: 220 15% 13%;
     --task-complete: 142 70% 50%;
     
     --sidebar-background: 220 15% 10%;
     --sidebar-foreground: 220 10% 85%;
-    --sidebar-primary: 268 75% 65%;
+    --sidebar-primary: 250 70% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 13%;
     --sidebar-accent-foreground: 220 10% 92%;
     --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 268 75% 65%;
+    --sidebar-ring: 250 70% 60%;
     
     --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.4);
     --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.5);
