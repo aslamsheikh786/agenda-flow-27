@@ -52,6 +52,7 @@ const DraggableTask = ({
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
         opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 1000 : 'auto',
       }
     : undefined;
 
@@ -59,10 +60,12 @@ const DraggableTask = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-start gap-2 p-3 rounded-xl hover:bg-sidebar-accent transition-all border border-transparent hover:border-border shadow-soft hover:shadow-medium"
+      className={`group flex items-start gap-2 p-3 rounded-xl hover:bg-sidebar-accent transition-all border border-transparent hover:border-border shadow-soft hover:shadow-medium ${
+        isDragging ? 'opacity-50' : ''
+      }`}
     >
       <div
-        className="mt-0.5 flex-shrink-0 cursor-move hover:text-primary transition-colors"
+        className="mt-0.5 flex-shrink-0 cursor-grab active:cursor-grabbing hover:text-primary transition-colors"
         {...listeners}
         {...attributes}
       >
