@@ -7,6 +7,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { CalendarView } from "@/components/CalendarViewSwitcher";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CalendarEvent {
   id: string;
@@ -23,6 +25,8 @@ const Index = () => {
     { id: "2", title: "Client Presentation", date: new Date(Date.now() + 86400000), startTime: "14:00", endTime: "15:30" },
   ]);
   const [currentView, setCurrentView] = useState<CalendarView>("month");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleAddEvent = (title: string, taskId?: string) => {
     const newEvent = {
@@ -90,10 +94,26 @@ const Index = () => {
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-screen bg-background">
-        <AppHeader currentView={currentView} onViewChange={setCurrentView} />
+        <AppHeader 
+          currentView={currentView} 
+          onViewChange={setCurrentView}
+          onMenuToggle={() => setDrawerOpen(true)}
+        />
         <div className="flex flex-1 overflow-hidden">
-          <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} />
-          <div className="flex-1 overflow-auto">
+          {/* Desktop: Always visible sidebar */}
+          <div className="hidden lg:block">
+            <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} />
+          </div>
+          
+          {/* Mobile: Drawer sidebar */}
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <DrawerContent className="h-[85vh]">
+              <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} />
+            </DrawerContent>
+          </Drawer>
+          
+          {/* Calendar view - full width on mobile, beside sidebar on desktop */}
+          <div className="flex-1 overflow-auto w-full">
             {renderCalendarView()}
           </div>
         </div>
