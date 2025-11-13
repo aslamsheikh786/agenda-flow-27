@@ -27,6 +27,7 @@ const Index = () => {
   ]);
   const [currentView, setCurrentView] = useState<CalendarView>("month");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const isMobile = useIsMobile();
 
   const handleAddEvent = (title: string, taskId?: string) => {
@@ -46,7 +47,12 @@ const Index = () => {
     setEvents(events.filter((event) => event.taskId !== taskId));
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setIsDragging(false);
     const { active, over } = event;
     
     if (over) {
@@ -93,7 +99,7 @@ const Index = () => {
   };
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-screen bg-background">
         <AppHeader 
           currentView={currentView} 
@@ -103,13 +109,13 @@ const Index = () => {
         <div className="flex flex-1 overflow-hidden">
           {/* Desktop: Always visible sidebar */}
           <div className="hidden lg:block">
-            <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} />
+            <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} isDragging={isDragging} />
           </div>
           
           {/* Mobile: Drawer sidebar */}
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerContent className="h-[85vh]">
-              <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} />
+              <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} isDragging={isDragging} />
             </DrawerContent>
           </Drawer>
           
