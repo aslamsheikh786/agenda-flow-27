@@ -96,8 +96,8 @@ export const FourDayView = ({ events = [] }: FourDayViewProps) => {
   };
 
   return (
-    <div className="flex-1 p-4 bg-background overflow-auto">
-      <div className="max-w-full mx-auto">
+    <div className="flex-1 p-4 bg-background overflow-auto flex flex-col">
+      <div className="max-w-full mx-auto w-full flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-foreground">
             {fourDays[0].toLocaleDateString("en-US", { month: "short", day: "numeric" })}
@@ -122,50 +122,56 @@ export const FourDayView = ({ events = [] }: FourDayViewProps) => {
           </div>
         </div>
 
-        <div className="rounded-lg overflow-hidden shadow-medium border border-border">
+        <div className="rounded-lg overflow-hidden shadow-medium border border-border mb-4 flex-shrink-0">
           <div className="grid grid-cols-[60px_repeat(4,1fr)] bg-card">
-            <div className="sticky top-0 z-20 bg-card border-r border-b border-border p-2">
-              <span className="text-xs font-medium text-muted-foreground">Time</span>
-            </div>
-            {fourDays.map((date) => (
+            <div className="border-r border-b border-border p-2 bg-muted/10"></div>
+            {fourDays.map((day) => (
               <div
-                key={date.toDateString()}
-                className={`sticky top-0 z-20 text-center p-2 border-r border-b border-border ${
-                  isToday(date) ? "bg-calendar-today/10" : "bg-card"
+                key={day.toDateString()}
+                className={`border-r border-b border-border p-2 text-center ${
+                  isToday(day) ? "bg-primary/10" : "bg-card"
                 }`}
               >
-                <div className="text-xs font-medium text-muted-foreground">
-                  {date.toLocaleDateString("en-US", { weekday: "short" })}
+                <div className="text-xs font-medium text-foreground">
+                  {day.toLocaleDateString("en-US", { weekday: "short" })}
                 </div>
-                <div
-                  className={`text-sm font-bold mt-1 ${
-                    isToday(date) ? "text-calendar-today" : "text-foreground"
-                  }`}
-                >
-                  {date.getDate()}
+                <div className={`text-sm ${isToday(day) ? "font-bold text-primary" : "text-muted-foreground"}`}>
+                  {day.getDate()}
                 </div>
               </div>
             ))}
+          </div>
 
+          <div className="max-h-[35vh] overflow-y-auto">
             {hours.map((hour) => (
-              <div key={hour} className="contents">
-                <div className="bg-card border-r border-border p-2 text-right">
-                  <span className="text-xs text-muted-foreground">
-                    {hour.toString().padStart(2, "0")}:00
-                  </span>
+              <div key={hour} className="grid grid-cols-[60px_repeat(4,1fr)]">
+                <div className="border-r border-border p-1.5 text-[10px] text-muted-foreground text-right pr-2 bg-muted/10">
+                  {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                 </div>
-                {fourDays.map((date) => (
-                  <TimeSlot
-                    key={`${date.toDateString()}-${hour}`}
-                    date={date}
-                    hour={hour}
-                    events={events}
-                  />
+                {fourDays.map((day) => (
+                  <TimeSlot key={`${day.toDateString()}-${hour}`} date={day} hour={hour} events={events} />
                 ))}
               </div>
             ))}
           </div>
         </div>
+
+        {events.length > 0 && (
+          <div className="rounded-lg border border-border bg-card p-3 shadow-medium">
+            <h3 className="text-sm font-semibold mb-2 text-foreground">Upcoming Events</h3>
+            <div className="space-y-2">
+              {events.slice(0, 5).map((event) => (
+                <div key={event.id} className="p-2 rounded-lg bg-muted/50 border border-border">
+                  <div className="font-medium text-sm text-foreground">{event.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    {event.startTime && ` • ${event.startTime}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

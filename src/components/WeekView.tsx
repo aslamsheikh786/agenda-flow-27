@@ -97,10 +97,10 @@ export const WeekView = ({ events = [] }: WeekViewProps) => {
   };
 
   return (
-    <div className="flex-1 p-6 bg-background overflow-auto">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-foreground">
+    <div className="flex-1 p-4 bg-background overflow-auto flex flex-col">
+      <div className="max-w-[1600px] mx-auto w-full flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-foreground">
             Week of {weekDates[0].toLocaleDateString("en-US", { month: "long", day: "numeric" })}
           </h2>
           <div className="flex gap-2">
@@ -123,7 +123,7 @@ export const WeekView = ({ events = [] }: WeekViewProps) => {
           </div>
         </div>
 
-        <div className="rounded-xl overflow-hidden shadow-medium border border-border">
+        <div className="rounded-xl overflow-hidden shadow-medium border border-border mb-4 flex-shrink-0">
           <div className="grid grid-cols-[80px_repeat(7,1fr)] bg-card">
             <div className="border-r border-b border-border p-3 bg-muted/20"></div>
             {weekDates.map((date) => (
@@ -149,7 +149,7 @@ export const WeekView = ({ events = [] }: WeekViewProps) => {
             ))}
           </div>
 
-          <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
+          <div className="max-h-[40vh] overflow-y-auto">
             {hours.map((hour) => (
               <div key={hour} className="grid grid-cols-[80px_repeat(7,1fr)]">
                 <div className="border-r border-border p-2 text-xs text-muted-foreground text-right pr-3 bg-muted/10">
@@ -167,6 +167,23 @@ export const WeekView = ({ events = [] }: WeekViewProps) => {
             ))}
           </div>
         </div>
+
+        {events.length > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 shadow-medium">
+            <h3 className="text-lg font-semibold mb-3 text-foreground">This Week's Events</h3>
+            <div className="space-y-2">
+              {events.slice(0, 6).map((event) => (
+                <div key={event.id} className="p-3 rounded-lg bg-muted/50 border border-border">
+                  <div className="font-medium text-foreground">{event.title}</div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    {new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                    {event.startTime && ` • ${event.startTime} - ${event.endTime}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

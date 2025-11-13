@@ -149,9 +149,10 @@ const DraggableTask = ({
 interface TaskSidebarProps {
   onAddEvent?: (title: string, taskId?: string) => void;
   onDeleteTask?: (taskId: string) => void;
+  isDragging?: boolean;
 }
 
-export const TaskSidebar = ({ onAddEvent, onDeleteTask }: TaskSidebarProps) => {
+export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSidebarProps) => {
   const [tasks, setTasks] = useState<Task[]>([
     { 
       id: "1", 
@@ -414,7 +415,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask }: TaskSidebarProps) => {
       </ScrollArea>
 
       <TaskDialog
-        open={dialogOpen}
+        open={dialogOpen && !isDragging}
         onOpenChange={setDialogOpen}
         onSave={addTask}
       />

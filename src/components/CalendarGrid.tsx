@@ -7,6 +7,8 @@ interface CalendarEvent {
   id: string;
   title: string;
   date: Date;
+  startTime?: string;
+  endTime?: string;
   color?: string;
 }
 
@@ -60,6 +62,7 @@ const DayCard = ({ day, today, dayEvents, date }: DayCardProps) => {
 
 export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<number | null>(new Date().getDate());
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
@@ -103,11 +106,13 @@ export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
     });
   };
 
+  const selectedDayEvents = selectedDay ? getEventsForDay(selectedDay) : [];
+
   return (
-    <div className="flex-1 p-6 bg-background">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-foreground">
+    <div className="flex-1 p-4 bg-background overflow-auto flex flex-col">
+      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-foreground">
             {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           </h2>
           <div className="flex gap-2">
@@ -130,12 +135,12 @@ export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-px bg-border rounded-xl overflow-hidden shadow-medium">
+        <div className="grid grid-cols-7 gap-px bg-border rounded-xl overflow-hidden shadow-medium mb-4 flex-shrink-0">
           {/* Day headers */}
           {daysOfWeek.map((day) => (
             <div
               key={day}
-              className="bg-card p-3 text-center font-semibold text-muted-foreground text-sm"
+              className="bg-card p-2 text-center font-semibold text-muted-foreground text-xs"
             >
               {day}
             </div>
@@ -145,7 +150,7 @@ export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
           {Array.from({ length: firstDayOfMonth }).map((_, index) => (
             <div
               key={`empty-${index}`}
-              className="bg-muted/20 min-h-[120px]"
+              className="bg-muted/20 min-h-[80px]"
             />
           ))}
 
@@ -157,16 +162,41 @@ export const CalendarGrid = ({ events = [] }: CalendarGridProps) => {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
 
             return (
-              <DayCard
+              <div
                 key={day}
-                day={day}
-                today={today}
-                dayEvents={dayEvents}
-                date={date}
-              />
+                onClick={() => setSelectedDay(day)}
+                className="cursor-pointer"
+              >
+                <DayCard
+                  day={day}
+                  today={today}
+                  dayEvents={dayEvents}
+                  date={date}
+                />
+              </div>
             );
           })}
         </div>
+
+        {selectedDay && selectedDayEvents.length > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 shadow-medium">
+            <h3 className="text-lg font-semibold mb-3 text-foreground">
+              Events for {currentDate.toLocaleDateString("en-US", { month: "long" })} {selectedDay}
+            </h3>
+            <div className="space-y-2">
+              {selectedDayEvents.map((event) => (
+                <div key={event.id} className="p-3 rounded-lg bg-muted/50 border border-border">
+                  <div className="font-medium text-foreground">{event.title}</div>
+                  {event.startTime && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {event.startTime} - {event.endTime}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

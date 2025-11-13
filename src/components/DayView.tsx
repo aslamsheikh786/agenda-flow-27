@@ -32,18 +32,18 @@ const TimeSlot = ({ hour, events }: TimeSlotProps) => {
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[80px] border-b border-border p-3 transition-colors ${
+      className={`min-h-[50px] border-b border-border p-2 transition-colors ${
         isOver ? "bg-primary/10" : "hover:bg-muted/30"
       }`}
     >
       {slotEvents.map((event) => (
         <div
           key={event.id}
-          className="text-sm p-3 mb-2 rounded-lg bg-calendar-event text-primary-foreground shadow-soft"
+          className="text-xs p-2 mb-1 rounded-lg bg-calendar-event text-primary-foreground shadow-soft"
         >
-          <div className="font-semibold">{event.title}</div>
+          <div className="font-semibold truncate">{event.title}</div>
           {event.startTime && (
-            <div className="text-xs opacity-90 mt-1">
+            <div className="text-[10px] opacity-90 mt-0.5">
               {event.startTime} - {event.endTime}
             </div>
           )}
@@ -77,10 +77,10 @@ export const DayView = ({ events = [] }: DayViewProps) => {
   const isToday = new Date().toDateString() === currentDate.toDateString();
 
   return (
-    <div className="flex-1 p-6 bg-background overflow-auto">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-foreground">
+    <div className="flex-1 p-4 bg-background overflow-auto flex flex-col">
+      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-foreground">
             {currentDate.toLocaleDateString("en-US", { 
               weekday: "long",
               month: "long", 
@@ -111,18 +111,36 @@ export const DayView = ({ events = [] }: DayViewProps) => {
           </div>
         </div>
 
-        <div className="rounded-xl overflow-hidden shadow-medium border border-border bg-card">
-          <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
+        <div className="rounded-xl overflow-hidden shadow-medium border border-border bg-card mb-4 flex-shrink-0">
+          <div className="max-h-[40vh] overflow-y-auto">
             {hours.map((hour) => (
-              <div key={hour} className="grid grid-cols-[100px_1fr]">
-                <div className="border-r border-border p-4 text-sm text-muted-foreground text-right pr-4 bg-muted/10">
-                  {hour === 0 ? "12:00 AM" : hour < 12 ? `${hour}:00 AM` : hour === 12 ? "12:00 PM" : `${hour - 12}:00 PM`}
+              <div key={hour} className="grid grid-cols-[80px_1fr]">
+                <div className="border-r border-border p-2 text-xs text-muted-foreground text-right pr-2 bg-muted/10">
+                  {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                 </div>
                 <TimeSlot hour={hour} events={todayEvents} />
               </div>
             ))}
           </div>
         </div>
+
+        {todayEvents.length > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 shadow-medium">
+            <h3 className="text-lg font-semibold mb-3 text-foreground">Today's Events</h3>
+            <div className="space-y-2">
+              {todayEvents.map((event) => (
+                <div key={event.id} className="p-3 rounded-lg bg-muted/50 border border-border">
+                  <div className="font-medium text-foreground">{event.title}</div>
+                  {event.startTime && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {event.startTime} - {event.endTime}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
