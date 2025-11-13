@@ -2,6 +2,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { CalendarGrid } from "@/components/CalendarGrid";
 import { WeekView } from "@/components/WeekView";
 import { DayView } from "@/components/DayView";
+import { FourDayView } from "@/components/FourDayView";
 import { TaskSidebar } from "@/components/TaskSidebar";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -84,7 +85,7 @@ const Index = () => {
       case "day":
         return <DayView events={events} />;
       case "week":
-        return <WeekView events={events} />;
+        return isMobile ? <FourDayView events={events} /> : <WeekView events={events} />;
       case "month":
       default:
         return <CalendarGrid events={events} />;
