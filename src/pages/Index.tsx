@@ -28,6 +28,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<CalendarView>("month");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [closeTaskDialog, setCloseTaskDialog] = useState<(() => void) | null>(null);
   const isMobile = useIsMobile();
 
   const handleAddEvent = (title: string, taskId?: string) => {
@@ -49,6 +50,10 @@ const Index = () => {
 
   const handleDragStart = () => {
     setIsDragging(true);
+    // Directly close the task dialog when dragging starts
+    if (closeTaskDialog) {
+      closeTaskDialog();
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -109,13 +114,23 @@ const Index = () => {
         <div className="flex flex-1 overflow-hidden">
           {/* Desktop: Always visible sidebar */}
           <div className="hidden lg:block">
-            <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} isDragging={isDragging} />
+            <TaskSidebar 
+              onAddEvent={handleAddEvent} 
+              onDeleteTask={handleDeleteTask} 
+              isDragging={isDragging}
+              onRegisterCloseDialog={setCloseTaskDialog}
+            />
           </div>
           
           {/* Mobile: Drawer sidebar */}
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerContent className="h-[85vh]">
-              <TaskSidebar onAddEvent={handleAddEvent} onDeleteTask={handleDeleteTask} isDragging={isDragging} />
+              <TaskSidebar 
+                onAddEvent={handleAddEvent} 
+                onDeleteTask={handleDeleteTask} 
+                isDragging={isDragging}
+                onRegisterCloseDialog={setCloseTaskDialog}
+              />
             </DrawerContent>
           </Drawer>
           
