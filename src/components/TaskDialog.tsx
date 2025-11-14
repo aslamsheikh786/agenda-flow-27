@@ -58,8 +58,8 @@ export const TaskDialog = ({ open, onOpenChange, folders, onSave }: TaskDialogPr
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
-      <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-medium pointer-events-auto">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-medium">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Create New Task</DialogTitle>
           <DialogDescription className="text-muted-foreground">

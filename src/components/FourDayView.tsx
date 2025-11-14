@@ -64,11 +64,9 @@ export const FourDayView = ({ events = [] }: FourDayViewProps) => {
 
   const getFourDays = (date: Date) => {
     const days = [];
-    const startDate = new Date(date);
-    startDate.setDate(date.getDate() - date.getDay());
-
+    // Start from the current date, not the beginning of the week
     for (let i = 0; i < 4; i++) {
-      const day = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
+      const day = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
       days.push(day);
     }
     return days;

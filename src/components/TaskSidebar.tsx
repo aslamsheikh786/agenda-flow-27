@@ -1,6 +1,6 @@
 import { Plus, Circle, CheckCircle2, Calendar, Trash2, Zap, FolderPlus, ChevronRight, ChevronDown, Folder, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TaskDialog } from "./TaskDialog";
 import { Badge } from "@/components/ui/badge";
@@ -189,6 +189,13 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
   ]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+
+  // Close dialog immediately when dragging starts
+  useEffect(() => {
+    if (isDragging && dialogOpen) {
+      setDialogOpen(false);
+    }
+  }, [isDragging, dialogOpen]);
 
   const triggerCelebration = () => {
     const count = 200;
@@ -416,7 +423,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
       </ScrollArea>
 
       <TaskDialog
-        open={dialogOpen && !isDragging}
+        open={dialogOpen}
         onOpenChange={setDialogOpen}
         folders={folders}
         onSave={addTask}
