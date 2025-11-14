@@ -49,10 +49,14 @@ const Index = () => {
   };
 
   const handleDragStart = () => {
+    console.log('🔴 DRAG STARTED');
     setIsDragging(true);
     // Directly close the task dialog when dragging starts
     if (closeTaskDialog) {
+      console.log('🔴 Calling closeTaskDialog function');
       closeTaskDialog();
+    } else {
+      console.log('🔴 closeTaskDialog is null');
     }
   };
 
