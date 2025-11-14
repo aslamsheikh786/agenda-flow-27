@@ -9,24 +9,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 
+interface TaskFolder {
+  id: string;
+  name: string;
+}
+
 interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  folders: TaskFolder[];
   onSave: (task: {
     title: string;
     difficulty: string;
     duration: string;
     dueDate?: Date;
     priority: string;
+    folderId?: string;
   }) => void;
 }
 
-export const TaskDialog = ({ open, onOpenChange, onSave }: TaskDialogProps) => {
+export const TaskDialog = ({ open, onOpenChange, folders, onSave }: TaskDialogProps) => {
   const [title, setTitle] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [duration, setDuration] = useState("30");
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState("medium");
+  const [folderId, setFolderId] = useState<string | undefined>(folders.length > 0 ? folders[0].id : undefined);
 
   const handleSave = () => {
     if (!title.trim()) return;
@@ -37,6 +45,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave }: TaskDialogProps) => {
       duration,
       dueDate,
       priority,
+      folderId,
     });
 
     setTitle("");
@@ -44,12 +53,13 @@ export const TaskDialog = ({ open, onOpenChange, onSave }: TaskDialogProps) => {
     setDuration("30");
     setDueDate(undefined);
     setPriority("medium");
+    setFolderId(folders.length > 0 ? folders[0].id : undefined);
     onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-medium">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+      <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-medium pointer-events-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Create New Task</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -103,6 +113,24 @@ export const TaskDialog = ({ open, onOpenChange, onSave }: TaskDialogProps) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="folder" className="text-sm font-medium">
+              Folder
+            </Label>
+            <Select value={folderId} onValueChange={setFolderId}>
+              <SelectTrigger id="folder" className="bg-background border-input">
+                <SelectValue placeholder="Select a folder" />
+              </SelectTrigger>
+              <SelectContent>
+                {folders.map((folder) => (
+                  <SelectItem key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

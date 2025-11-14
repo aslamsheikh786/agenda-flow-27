@@ -68,8 +68,7 @@ export const FourDayView = ({ events = [] }: FourDayViewProps) => {
     startDate.setDate(date.getDate() - date.getDay());
 
     for (let i = 0; i < 4; i++) {
-      const day = new Date(startDate);
-      day.setDate(startDate.getDate() + i);
+      const day = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
       days.push(day);
     }
     return days;

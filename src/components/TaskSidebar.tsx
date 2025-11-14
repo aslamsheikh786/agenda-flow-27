@@ -238,6 +238,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
     duration: string;
     dueDate?: Date;
     priority: string;
+    folderId?: string;
   }) => {
     setTasks([
       ...tasks,
@@ -249,7 +250,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
         difficulty: taskData.difficulty,
         duration: taskData.duration,
         priority: taskData.priority,
-        folderId: folders.length > 0 ? folders[0].id : undefined,
+        folderId: taskData.folderId || (folders.length > 0 ? folders[0].id : undefined),
       },
     ]);
   };
@@ -417,6 +418,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
       <TaskDialog
         open={dialogOpen && !isDragging}
         onOpenChange={setDialogOpen}
+        folders={folders}
         onSave={addTask}
       />
       <FolderDialog
