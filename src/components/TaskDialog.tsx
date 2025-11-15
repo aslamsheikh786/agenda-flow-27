@@ -18,7 +18,6 @@ interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   folders: TaskFolder[];
-  isDragging?: boolean;
   onSave: (task: {
     title: string;
     difficulty: string;
@@ -29,7 +28,7 @@ interface TaskDialogProps {
   }) => void;
 }
 
-export const TaskDialog = ({ open, onOpenChange, folders, isDragging, onSave }: TaskDialogProps) => {
+export const TaskDialog = ({ open, onOpenChange, folders, onSave }: TaskDialogProps) => {
   const [title, setTitle] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [duration, setDuration] = useState("30");
@@ -60,7 +59,7 @@ export const TaskDialog = ({ open, onOpenChange, folders, isDragging, onSave }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-[500px] bg-card border-border shadow-medium transition-opacity ${isDragging ? 'opacity-0 pointer-events-none' : ''}`}>
+      <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-medium">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Create New Task</DialogTitle>
           <DialogDescription className="text-muted-foreground">
