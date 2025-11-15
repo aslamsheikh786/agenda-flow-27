@@ -150,10 +150,9 @@ interface TaskSidebarProps {
   onAddEvent?: (title: string, taskId?: string) => void;
   onDeleteTask?: (taskId: string) => void;
   isDragging?: boolean;
-  onRegisterCloseDialog?: (closeFunc: () => void) => void;
 }
 
-export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, onRegisterCloseDialog }: TaskSidebarProps) => {
+export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSidebarProps) => {
   const [tasks, setTasks] = useState<Task[]>([
     { 
       id: "1", 
@@ -191,20 +190,18 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, onRegisterCl
   const [dialogOpen, setDialogOpen] = useState(false);
   const [folderDialogOpen, setFolderDialogOpen] = useState(false);
 
-  // Register the close dialog function with parent component
-  useEffect(() => {
-    if (onRegisterCloseDialog) {
-      onRegisterCloseDialog(() => {
-        console.log('🔴 CLOSING DIALOG');
-        setDialogOpen(false);
-      });
-    }
-  }, [onRegisterCloseDialog]);
-
   // Log dialog state changes
   useEffect(() => {
     console.log('🔴 Dialog open:', dialogOpen);
   }, [dialogOpen]);
+
+  // Close dialog when dragging starts
+  useEffect(() => {
+    if (isDragging) {
+      console.log('🔴 CLOSING DIALOG because isDragging is true');
+      setDialogOpen(false);
+    }
+  }, [isDragging]);
 
   const triggerCelebration = () => {
     const count = 200;
@@ -435,7 +432,6 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, onRegisterCl
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         folders={folders}
-        isDragging={isDragging}
         onSave={addTask}
       />
       <FolderDialog

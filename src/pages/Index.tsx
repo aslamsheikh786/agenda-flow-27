@@ -28,7 +28,6 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<CalendarView>("month");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [closeTaskDialog, setCloseTaskDialog] = useState<(() => void) | null>(null);
   const isMobile = useIsMobile();
 
   const handleAddEvent = (title: string, taskId?: string) => {
@@ -51,13 +50,6 @@ const Index = () => {
   const handleDragStart = () => {
     console.log('🔴 DRAG STARTED');
     setIsDragging(true);
-    // Directly close the task dialog when dragging starts
-    if (closeTaskDialog) {
-      console.log('🔴 Calling closeTaskDialog function');
-      closeTaskDialog();
-    } else {
-      console.log('🔴 closeTaskDialog is null');
-    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -122,7 +114,6 @@ const Index = () => {
               onAddEvent={handleAddEvent} 
               onDeleteTask={handleDeleteTask} 
               isDragging={isDragging}
-              onRegisterCloseDialog={setCloseTaskDialog}
             />
           </div>
           
@@ -133,7 +124,6 @@ const Index = () => {
                 onAddEvent={handleAddEvent} 
                 onDeleteTask={handleDeleteTask} 
                 isDragging={isDragging}
-                onRegisterCloseDialog={setCloseTaskDialog}
               />
             </DrawerContent>
           </Drawer>
