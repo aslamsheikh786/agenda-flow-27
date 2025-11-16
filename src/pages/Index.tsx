@@ -6,7 +6,7 @@ import { FourDayView } from "@/components/FourDayView";
 import { TaskSidebar } from "@/components/TaskSidebar";
 import { useState } from "react";
 import { toast } from "sonner";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { CalendarView } from "@/components/CalendarViewSwitcher";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,6 +18,17 @@ interface CalendarEvent {
   startTime?: string;
   endTime?: string;
   taskId?: string;
+}
+
+interface TaskData {
+  id: string;
+  title: string;
+  completed: boolean;
+  dueDate?: Date;
+  difficulty?: string;
+  duration?: string;
+  priority?: string;
+  folderId?: string;
 }
 
 const Index = () => {
@@ -41,23 +52,34 @@ const Index = () => {
     };
     setEvents([...events, newEvent]);
     toast.success("Task added to calendar");
+    
+    // Close drawer on mobile after adding
+    if (isMobile) {
+      setDrawerOpen(false);
+    }
   };
 
   const handleDeleteTask = (taskId: string) => {
     setEvents(events.filter((event) => event.taskId !== taskId));
   };
 
-  const handleDragStart = () => {
+  const handleDragStart = (event: DragStartEvent) => {
     console.log('🔴 DRAG STARTED');
     setIsDragging(true);
+    
+    // Close drawer on desktop when dragging starts
+    if (!isMobile && drawerOpen) {
+      setDrawerOpen(false);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    console.log('🔴 DRAG ENDED');
     setIsDragging(false);
     const { active, over } = event;
     
-    if (over) {
-      const taskData = active.data.current as any;
+    if (over && active.data.current) {
+      const taskData = active.data.current as TaskData;
       let dropDate: Date;
       
       if (currentView === "month") {
@@ -108,22 +130,24 @@ const Index = () => {
           onMenuToggle={() => setDrawerOpen(true)}
         />
         <div className="flex flex-1 overflow-hidden">
-          {/* Desktop: Always visible sidebar */}
+          {/* Desktop: Always visible sidebar - Drag & Drop works */}
           <div className="hidden lg:block">
             <TaskSidebar 
               onAddEvent={handleAddEvent} 
               onDeleteTask={handleDeleteTask} 
               isDragging={isDragging}
+              isMobile={false}
             />
           </div>
           
-          {/* Mobile: Drawer sidebar */}
+          {/* Mobile: Drawer sidebar - Use "Schedule" button instead of drag */}
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerContent className="h-[85vh]">
               <TaskSidebar 
                 onAddEvent={handleAddEvent} 
                 onDeleteTask={handleDeleteTask} 
                 isDragging={isDragging}
+                isMobile={true}
               />
             </DrawerContent>
           </Drawer>

@@ -33,7 +33,8 @@ interface DraggableTaskProps {
   onAddToCalendar: (task: Task) => void;
   getDifficultyColor: (difficulty?: string) => string;
   getPriorityColor: (priority?: string) => string;
-  disabled?: boolean;
+  isAnyDialogOpen: boolean;
+  isMobile: boolean;
 }
 
 const DraggableTask = ({
@@ -43,12 +44,14 @@ const DraggableTask = ({
   onAddToCalendar,
   getDifficultyColor,
   getPriorityColor,
-  disabled = false,
+  isAnyDialogOpen,
+  isMobile,
 }: DraggableTaskProps) => {
+  // Disable dragging on mobile OR when dialog is open
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: task,
-    disabled,
+    disabled: isMobile || isAnyDialogOpen,
   });
 
   const style = transform
@@ -67,17 +70,22 @@ const DraggableTask = ({
         isDragging ? 'opacity-50' : ''
       }`}
     >
-      <div
-        className={`mt-0.5 flex-shrink-0 transition-colors ${
-          disabled 
-            ? 'cursor-not-allowed opacity-30' 
-            : 'cursor-grab active:cursor-grabbing hover:text-primary'
-        }`}
-        {...(!disabled ? listeners : {})}
-        {...(!disabled ? attributes : {})}
-      >
-        <GripVertical className="h-5 w-5 text-muted-foreground" />
-      </div>
+      {/* Show drag handle only on desktop */}
+      {!isMobile && (
+        <div
+          className={`mt-0.5 flex-shrink-0 transition-colors ${
+            isAnyDialogOpen 
+              ? 'cursor-not-allowed text-muted-foreground/30' 
+              : 'cursor-grab active:cursor-grabbing hover:text-primary'
+          }`}
+          {...(isAnyDialogOpen ? {} : listeners)}
+          {...(isAnyDialogOpen ? {} : attributes)}
+          title={isAnyDialogOpen ? "Close dialog to drag" : "Drag to calendar"}
+        >
+          <GripVertical className="h-5 w-5" />
+        </div>
+      )}
+      
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -91,6 +99,7 @@ const DraggableTask = ({
           <Circle className="h-5 w-5 text-muted-foreground" />
         )}
       </button>
+      
       <div className="flex-1 min-w-0">
         <p
           className={`text-sm font-medium ${
@@ -125,6 +134,7 @@ const DraggableTask = ({
           </p>
         )}
       </div>
+      
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <Button
           variant="ghost"
@@ -134,6 +144,7 @@ const DraggableTask = ({
             e.stopPropagation();
             onAddToCalendar(task);
           }}
+          title={isMobile ? "Add to calendar" : "Add to calendar"}
         >
           <Calendar className="h-4 w-4" />
         </Button>
@@ -157,9 +168,10 @@ interface TaskSidebarProps {
   onAddEvent?: (title: string, taskId?: string) => void;
   onDeleteTask?: (taskId: string) => void;
   isDragging?: boolean;
+  isMobile?: boolean;
 }
 
-export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSidebarProps) => {
+export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = false }: TaskSidebarProps) => {
   const [tasks, setTasks] = useState<Task[]>([
     { 
       id: "1", 
@@ -196,14 +208,21 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
   ]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [folderDialogOpen, setFolderDialogOpen] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  // Reset selected task when dialog closes
+  // Close dialog immediately when dragging starts (desktop only)
   useEffect(() => {
-    if (!dialogOpen) {
-      setSelectedTaskId(null);
+    if (isDragging && !isMobile) {
+      console.log('🔴 CLOSING DIALOG because isDragging is true');
+      setDialogOpen(false);
+      setFolderDialogOpen(false);
     }
-  }, [dialogOpen]);
+  }, [isDragging, isMobile]);
+
+  // Log dialog state changes for debugging
+  useEffect(() => {
+    console.log('🔴 Task Dialog open:', dialogOpen);
+    console.log('🔴 Folder Dialog open:', folderDialogOpen);
+  }, [dialogOpen, folderDialogOpen]);
 
   const triggerCelebration = () => {
     const count = 200;
@@ -334,6 +353,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
   };
 
   const unassignedTasks = tasks.filter((task) => !task.folderId);
+  const isAnyDialogOpen = dialogOpen || folderDialogOpen;
 
   return (
     <div className="w-80 border-r border-border bg-sidebar flex flex-col h-screen shadow-soft">
@@ -344,12 +364,21 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
             {tasks.filter(t => !t.completed).length} active
           </Badge>
         </div>
+        
+        {/* Info banner for mobile vs desktop */}
+        {isMobile ? (
+          <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-xs text-blue-700 dark:text-blue-400">
+            📱 Tap the <Calendar className="inline h-3 w-3" /> button to schedule tasks
+          </div>
+        ) : isAnyDialogOpen && (
+          <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-xs text-yellow-700 dark:text-yellow-400">
+            ⚠️ Close dialog to enable drag & drop
+          </div>
+        )}
+        
         <div className="flex gap-2">
           <Button
-            onClick={() => {
-              setSelectedTaskId(null);
-              setDialogOpen(true);
-            }}
+            onClick={() => setDialogOpen(true)}
             className="flex-1 bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground shadow-soft"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -392,20 +421,17 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2 mt-2 ml-6">
                   {folderTasks.map((task) => (
-                    <div key={task.id} onClick={() => {
-                      setSelectedTaskId(task.id);
-                      setDialogOpen(true);
-                    }}>
-                      <DraggableTask
-                        task={task}
-                        onToggle={toggleTask}
-                        onDelete={deleteTask}
-                        onAddToCalendar={addToCalendar}
-                        getDifficultyColor={getDifficultyColor}
-                        getPriorityColor={getPriorityColor}
-                        disabled={dialogOpen && selectedTaskId === task.id}
-                      />
-                    </div>
+                    <DraggableTask
+                      key={task.id}
+                      task={task}
+                      onToggle={toggleTask}
+                      onDelete={deleteTask}
+                      onAddToCalendar={addToCalendar}
+                      getDifficultyColor={getDifficultyColor}
+                      getPriorityColor={getPriorityColor}
+                      isAnyDialogOpen={isAnyDialogOpen}
+                      isMobile={isMobile}
+                    />
                   ))}
                 </CollapsibleContent>
               </Collapsible>
@@ -422,20 +448,17 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging }: TaskSideba
               </div>
               <div className="space-y-2">
                 {unassignedTasks.map((task) => (
-                  <div key={task.id} onClick={() => {
-                    setSelectedTaskId(task.id);
-                    setDialogOpen(true);
-                  }}>
-                    <DraggableTask
-                      task={task}
-                      onToggle={toggleTask}
-                      onDelete={deleteTask}
-                      onAddToCalendar={addToCalendar}
-                      getDifficultyColor={getDifficultyColor}
-                      getPriorityColor={getPriorityColor}
-                      disabled={dialogOpen && selectedTaskId === task.id}
-                    />
-                  </div>
+                  <DraggableTask
+                    key={task.id}
+                    task={task}
+                    onToggle={toggleTask}
+                    onDelete={deleteTask}
+                    onAddToCalendar={addToCalendar}
+                    getDifficultyColor={getDifficultyColor}
+                    getPriorityColor={getPriorityColor}
+                    isAnyDialogOpen={isAnyDialogOpen}
+                    isMobile={isMobile}
+                  />
                 ))}
               </div>
             </div>
