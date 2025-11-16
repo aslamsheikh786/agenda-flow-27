@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import confetti from "canvas-confetti";
 import { useDraggable } from "@dnd-kit/core";
 import { FolderDialog } from "./FolderDialog";
+import { ScheduleTaskDialog } from "./ScheduleTaskDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface Task {
@@ -30,7 +31,7 @@ interface DraggableTaskProps {
   task: Task;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onAddToCalendar: (task: Task) => void;
+  onOpenScheduleDialog: (task: Task) => void;
   getDifficultyColor: (difficulty?: string) => string;
   getPriorityColor: (priority?: string) => string;
   isAnyDialogOpen: boolean;
@@ -41,7 +42,7 @@ const DraggableTask = ({
   task,
   onToggle,
   onDelete,
-  onAddToCalendar,
+  onOpenScheduleDialog,
   getDifficultyColor,
   getPriorityColor,
   isAnyDialogOpen,
@@ -142,9 +143,9 @@ const DraggableTask = ({
           className="h-7 w-7 hover:bg-background"
           onClick={(e) => {
             e.stopPropagation();
-            onAddToCalendar(task);
+            onOpenScheduleDialog(task);
           }}
-          title={isMobile ? "Add to calendar" : "Add to calendar"}
+          title="Schedule task"
         >
           <Calendar className="h-4 w-4" />
         </Button>
@@ -165,7 +166,7 @@ const DraggableTask = ({
 };
 
 interface TaskSidebarProps {
-  onAddEvent?: (title: string, taskId?: string) => void;
+  onAddEvent?: (title: string, taskId?: string, date?: Date, startTime?: string, endTime?: string) => void;
   onDeleteTask?: (taskId: string) => void;
   isDragging?: boolean;
   isMobile?: boolean;
@@ -208,6 +209,8 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
   ]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // Close dialog immediately when dragging starts (desktop only)
   useEffect(() => {
@@ -215,6 +218,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
       console.log('🔴 CLOSING DIALOG because isDragging is true');
       setDialogOpen(false);
       setFolderDialogOpen(false);
+      setScheduleDialogOpen(false);
     }
   }, [isDragging, isMobile]);
 
@@ -222,7 +226,8 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
   useEffect(() => {
     console.log('🔴 Task Dialog open:', dialogOpen);
     console.log('🔴 Folder Dialog open:', folderDialogOpen);
-  }, [dialogOpen, folderDialogOpen]);
+    console.log('🔴 Schedule Dialog open:', scheduleDialogOpen);
+  }, [dialogOpen, folderDialogOpen, scheduleDialogOpen]);
 
   const triggerCelebration = () => {
     const count = 200;
@@ -328,9 +333,15 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
     }
   };
 
-  const addToCalendar = (task: Task) => {
+  const openScheduleDialog = (task: Task) => {
+    setSelectedTask(task);
+    setScheduleDialogOpen(true);
+  };
+
+  const handleScheduleTask = (task: Task, date: Date, startTime: string, endTime: string) => {
     if (onAddEvent) {
-      onAddEvent(task.title, task.id);
+      // Pass the selected date and time to the parent component
+      onAddEvent(task.title, task.id, date, startTime, endTime);
     }
   };
 
@@ -353,7 +364,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
   };
 
   const unassignedTasks = tasks.filter((task) => !task.folderId);
-  const isAnyDialogOpen = dialogOpen || folderDialogOpen;
+  const isAnyDialogOpen = dialogOpen || folderDialogOpen || scheduleDialogOpen;
 
   return (
     <div className="w-80 border-r border-border bg-sidebar flex flex-col h-screen shadow-soft">
@@ -426,7 +437,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
                       task={task}
                       onToggle={toggleTask}
                       onDelete={deleteTask}
-                      onAddToCalendar={addToCalendar}
+                      onOpenScheduleDialog={openScheduleDialog}
                       getDifficultyColor={getDifficultyColor}
                       getPriorityColor={getPriorityColor}
                       isAnyDialogOpen={isAnyDialogOpen}
@@ -453,7 +464,7 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
                     task={task}
                     onToggle={toggleTask}
                     onDelete={deleteTask}
-                    onAddToCalendar={addToCalendar}
+                    onOpenScheduleDialog={openScheduleDialog}
                     getDifficultyColor={getDifficultyColor}
                     getPriorityColor={getPriorityColor}
                     isAnyDialogOpen={isAnyDialogOpen}
@@ -476,6 +487,12 @@ export const TaskSidebar = ({ onAddEvent, onDeleteTask, isDragging, isMobile = f
         open={folderDialogOpen}
         onOpenChange={setFolderDialogOpen}
         onSave={addFolder}
+      />
+      <ScheduleTaskDialog
+        open={scheduleDialogOpen}
+        onOpenChange={setScheduleDialogOpen}
+        task={selectedTask}
+        onSchedule={handleScheduleTask}
       />
     </div>
   );

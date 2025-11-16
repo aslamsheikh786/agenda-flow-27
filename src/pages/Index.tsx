@@ -41,17 +41,18 @@ const Index = () => {
   const [isDragging, setIsDragging] = useState(false);
   const isMobile = useIsMobile();
 
-  const handleAddEvent = (title: string, taskId?: string) => {
+  const handleAddEvent = (title: string, taskId?: string, date?: Date, startTime?: string, endTime?: string) => {
+    const eventDate = date || new Date();
     const newEvent = {
       id: Date.now().toString(),
       title,
-      date: new Date(),
-      startTime: "09:00",
-      endTime: "10:00",
+      date: eventDate,
+      startTime: startTime || "09:00",
+      endTime: endTime || "10:00",
       taskId,
     };
     setEvents([...events, newEvent]);
-    toast.success("Task added to calendar");
+    toast.success(`Task scheduled for ${eventDate.toLocaleDateString()}`);
     
     // Close drawer on mobile after adding
     if (isMobile) {
