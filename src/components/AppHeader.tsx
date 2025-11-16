@@ -27,7 +27,7 @@ export const AppHeader = ({ currentView, onViewChange, onMenuToggle }: AppHeader
           </Button>
         )}
         <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Morgen
+          Zenex
         </h1>
       </div>
       
