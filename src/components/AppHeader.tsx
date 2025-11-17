@@ -26,9 +26,17 @@ export const AppHeader = ({ currentView, onViewChange, onMenuToggle }: AppHeader
             <Menu className="h-5 w-5" />
           </Button>
         )}
-        <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Zenex
-        </h1>
+        {/* Logo and Title */}
+        <div className="flex items-center gap-2">
+          <img 
+            src="/icon-192x192.png" 
+            alt="Zenex Logo" 
+            className="h-8 w-8 md:h-10 md:w-10"
+          />
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Zenex
+          </h1>
+        </div>
       </div>
       
       <div className="hidden md:flex flex-1 max-w-md mx-8">
