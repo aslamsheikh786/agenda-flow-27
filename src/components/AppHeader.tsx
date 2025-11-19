@@ -26,10 +26,10 @@ export const AppHeader = ({ currentView, onViewChange, onMenuToggle }: AppHeader
             <Menu className="h-5 w-5" />
           </Button>
         )}
-        {/* Logo and Title */}
+        {/* Logo - Transparent version for in-app use */}
         <div className="flex items-center gap-2">
           <img 
-            src="/icon-192x192.png" 
+            src="/logo-transparent.png" 
             alt="Zenex Logo" 
             className="h-8 w-8 md:h-10 md:w-10"
           />
